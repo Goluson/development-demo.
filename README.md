@@ -1,4 +1,4 @@
-# development-demo.
-this is my first git repository.
+# development
+This is my first git repository.
 <br>
 Author - Shailesh soni
