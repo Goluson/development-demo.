@@ -1,0 +1,79 @@
+* {
+    padding: 0px;
+    margin: 0%;
+    text-align: center;
+    
+}
+
+
+h1 {
+    background-color: #113a69;
+    color: white;
+    height: 4.5rem;
+    line-height: 4.5rem;
+}
+
+.choice {
+    height: 165px;
+    width: 165px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.choice:hover {
+    opacity: 0.8;
+    cursor: pointer;
+    background-color: #008;
+}
+
+img {
+    height: 160px;
+    width: 160px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+.choices {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 3rem;
+    margin-top: 5rem;
+} 
+
+.score-boared{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2rem;
+
+}
+#user-score, 
+#comp-score {
+     font-size: 3.5rem;
+     margin: 3rem;
+     gap: 5rem;
+} 
+
+.msg-container {
+    margin-top: 5rem;
+    background-color: rgb(15, 15, 80);
+    color: white;
+    height: 5rem;
+    width: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center; /* vertically center text */
+    border-radius: 1rem;
+    font-size: 2rem;
+    margin-left: auto;
+    margin-right: auto; /* centers the box horizontally */
+    text-align: center;
+   
+}
+
+.msg {
+    background-color: transparent; /* No need to repeat background */
+    margin: 0; /* Remove extra top margin */
+}
