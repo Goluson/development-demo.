@@ -7,33 +7,78 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-   
+
     <div class="msg-container hide">
-       
         <p id="msg">Winner</p>
-       <!--<p>Drow the game</p>--> 
         <button id="new-btn">New Game</button>
     </div>
+
     <main>
         <h1>Tik Tak Toe</h1>
+
+        <!-- ============ NEW: turn indicator ============ -->
+        <p id="turn-indicator">Turn: O</p>
+
+        <!-- ============ NEW: scoreboard ============ -->
+        <div class="scoreboard">
+            <span>O: <span id="score-o">0</span></span>
+            <span>X: <span id="score-x">0</span></span>
+            <span>Draws: <span id="score-draw">0</span></span>
+        </div>
+
+        <!-- ============ NEW: vs-computer toggle + settings button ============ -->
+        <div class="controls">
+            <label>
+                <input type="checkbox" id="vs-computer-toggle">
+                Play vs Computer (unbeatable AI)
+            </label>
+            <button id="settings-btn" type="button">Settings</button>
+        </div>
+
         <div class="container">
-           
-        <div class="game">
-            <button class="box"></button>
-            <button class="box"></button>
-            <button class="box"></button>
-            <button class="box"></button>
-            <button class="box"></button>
-            <button class="box"></button>
-            <button class="box"></button>
-            <button class="box"></button>
-            <button class="box"></button>
+            <div class="game">
+                <!-- NEW: tabindex + aria-label added to every box for keyboard/screen-reader access -->
+                <button class="box" tabindex="0" aria-label="Row 1 Column 1"></button>
+                <button class="box" tabindex="0" aria-label="Row 1 Column 2"></button>
+                <button class="box" tabindex="0" aria-label="Row 1 Column 3"></button>
+                <button class="box" tabindex="0" aria-label="Row 2 Column 1"></button>
+                <button class="box" tabindex="0" aria-label="Row 2 Column 2"></button>
+                <button class="box" tabindex="0" aria-label="Row 2 Column 3"></button>
+                <button class="box" tabindex="0" aria-label="Row 3 Column 1"></button>
+                <button class="box" tabindex="0" aria-label="Row 3 Column 2"></button>
+                <button class="box" tabindex="0" aria-label="Row 3 Column 3"></button>
+            </div>
+        </div>
+
+        <button id="resetbtn" class="resetbtn">Reset Button</button>
+    </main>
+
+    <!-- ============ NEW: settings modal (player names + best-of-N) ============ -->
+    <div id="settings-modal" class="modal hide">
+        <div class="modal-content">
+            <h2>Settings</h2>
+
+            <label for="player-o-name">Player O name</label>
+            <input type="text" id="player-o-name" placeholder="Player O">
+
+            <label for="player-x-name">Player X name</label>
+            <input type="text" id="player-x-name" placeholder="Player X">
+
+            <label for="best-of-select">Match length</label>
+            <select id="best-of-select">
+                <option value="1">Single game</option>
+                <option value="3">Best of 3</option>
+                <option value="5" selected>Best of 5</option>
+                <option value="7">Best of 7</option>
+            </select>
+
+            <div class="modal-buttons">
+                <button id="settings-save-btn" type="button">Save</button>
+                <button id="settings-close-btn" type="button">Close</button>
+            </div>
         </div>
     </div>
-    
-    <button id="resetbtn">Reset Button</button>
-    </main>
+
     <script src="first.js"></script>
 </body>
-
 </html>
