@@ -39,7 +39,7 @@ boxes.forEach((box) => {
     count++;
     if(!checkWinner() && count==9){
         alert("Game Draw");
-    } turnO != turnO
+    }// turnO != turnO
      // disable the button
      checkWinner();
   });    
