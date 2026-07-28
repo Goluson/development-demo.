@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let turnO = true;
     let count = 0;
 
-// ============ NEW: element references for the added features ============
+// ============ NEW: element references for the added features ======
 let turnIndicator = document.querySelector("#turn-indicator");
 let scoreOEl = document.querySelector("#score-o");
 let scoreXEl = document.querySelector("#score-x");
@@ -201,9 +201,7 @@ const checkWinner = () => {
 newGamebtn.addEventListener("click", resetGame);
 resetbtn.addEventListener("click", resetGame);
 
-// =====================================================================
 // NEW SECTION: Minimax AI (unbeatable computer opponent, plays as "X")
-// =====================================================================
 
 // Pure helper: given a 9-length array of "", "X", "O", return the winner symbol or null.
 const checkPatternWinner = (state) => {
@@ -280,9 +278,7 @@ const aiMove = () => {
     }
 };
 
-
 // NEW SECTION: Settings modal (player names + best-of-N match length)
-
 
 settingsBtn.addEventListener("click", () => {
     settingsModal.classList.remove("hide");
