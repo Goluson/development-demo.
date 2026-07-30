@@ -15,9 +15,9 @@ A simple browser-based Tic-Tac-Toe game built with HTML, CSS, and JavaScript.
 3. Start playing the game.
 
 ## Project Files
-- `index.html` - Main game layout
-- `style.css` - Styling for the game
-- `first.js` - Game logic and AI
+- `index.html` - Main game layout.
+- `style.css` - Styling for the game.
+- `first.js` - Game logic and AI.
 
 ## Author
 Shailesh Soni
