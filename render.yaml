@@ -1,0 +1,6 @@
+services:
+  - type: static
+    name: tic-tac-toe-game
+    plan: free
+    buildCommand: ""
+    staticPublishPath: .
