@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tic-Tac-Toe — Smart AI & 2-Player Game</title>
+    <title>Tic-Tac-Toe — 4x4 & 3x3 Matrix with Smart AI</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
@@ -14,10 +14,16 @@
 
     <div class="app-wrapper">
         <header class="game-header">
-            <div class="logo-badge">Classic Strategy</div>
+            <div class="logo-badge">Dynamic Grid Strategy</div>
             <h1>Tic-Tac-Toe</h1>
             <p id="turn-indicator" class="turn-indicator">Turn: <span class="player-tag player-o">Player O</span></p>
         </header>
+
+        <!-- Grid Size Mode Selector -->
+        <div class="grid-mode-bar">
+            <button class="grid-size-btn active" data-size="4">4 × 4 Matrix (4 in a row)</button>
+            <button class="grid-size-btn" data-size="3">3 × 3 Classic</button>
+        </div>
 
         <!-- Scoreboard -->
         <section class="scoreboard-card" aria-label="Scoreboard">
@@ -35,12 +41,12 @@
             </div>
         </section>
 
-        <!-- Mode & Settings Bar -->
+        <!-- Controls Bar -->
         <div class="controls-bar">
             <div class="mode-select-wrap">
                 <label for="ai-mode-select">Opponent:</label>
                 <select id="ai-mode-select">
-                    <option value="unbeatable" selected>Unbeatable AI</option>
+                    <option value="smart" selected>Smart AI</option>
                     <option value="easy">Casual AI</option>
                     <option value="pvp">2 Players (Local)</option>
                 </select>
@@ -51,18 +57,10 @@
             </div>
         </div>
 
-        <!-- 3x3 Game Grid -->
+        <!-- Dynamic Game Grid (rendered via JS) -->
         <main class="grid-container">
-            <div class="game-board" id="game-board">
-                <button class="box" data-index="0" tabindex="0" aria-label="Top Left"></button>
-                <button class="box" data-index="1" tabindex="0" aria-label="Top Middle"></button>
-                <button class="box" data-index="2" tabindex="0" aria-label="Top Right"></button>
-                <button class="box" data-index="3" tabindex="0" aria-label="Middle Left"></button>
-                <button class="box" data-index="4" tabindex="0" aria-label="Center"></button>
-                <button class="box" data-index="5" tabindex="0" aria-label="Middle Right"></button>
-                <button class="box" data-index="6" tabindex="0" aria-label="Bottom Left"></button>
-                <button class="box" data-index="7" tabindex="0" aria-label="Bottom Middle"></button>
-                <button class="box" data-index="8" tabindex="0" aria-label="Bottom Right"></button>
+            <div class="game-board grid-4x4" id="game-board" role="grid" aria-label="Tic-Tac-Toe Board">
+                <!-- Tiles dynamically generated based on 4x4 or 3x3 -->
             </div>
         </main>
 
@@ -73,7 +71,7 @@
         </div>
     </div>
 
-    <!-- Round Winner Banner / Toast -->
+    <!-- Round Winner Banner Modal -->
     <div id="round-modal" class="modal-overlay hide">
         <div class="modal-card win-banner">
             <div id="round-icon" class="banner-icon">🏆</div>

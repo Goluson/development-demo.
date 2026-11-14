@@ -34,7 +34,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 24px 16px;
+    padding: 20px 14px;
     overflow-x: hidden;
     position: relative;
     background-image: 
@@ -58,7 +58,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 16px;
+    gap: 12px;
 }
 
 /* Header */
@@ -68,20 +68,20 @@ body {
 
 .logo-badge {
     display: inline-block;
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--color-o);
     background: rgba(56, 189, 248, 0.1);
     border: 1px solid rgba(56, 189, 248, 0.2);
-    padding: 4px 12px;
+    padding: 3px 10px;
     border-radius: 999px;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
 }
 
 h1 {
-    font-size: 2.2rem;
+    font-size: 2.1rem;
     font-weight: 800;
     letter-spacing: -0.03em;
     background: linear-gradient(135deg, #ffffff 40%, #cbd5e1 100%);
@@ -90,7 +90,7 @@ h1 {
 }
 
 .turn-indicator {
-    margin-top: 6px;
+    margin-top: 4px;
     font-size: 0.95rem;
     color: var(--text-muted);
 }
@@ -112,17 +112,48 @@ h1 {
     background: rgba(251, 113, 133, 0.12);
 }
 
+/* Grid Size Selector Bar */
+.grid-mode-bar {
+    width: 100%;
+    display: flex;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--card-border);
+    padding: 4px;
+    border-radius: var(--radius-sm);
+}
+
+.grid-size-btn {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    padding: 7px 10px;
+    border-radius: 7px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.grid-size-btn.active {
+    background: rgba(56, 189, 248, 0.15);
+    color: var(--color-o);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
 /* Scoreboard */
 .scoreboard-card {
     width: 100%;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
-    gap: 10px;
+    gap: 8px;
     background: var(--card-bg);
     border: 1px solid var(--card-border);
     backdrop-filter: blur(16px);
     border-radius: var(--radius-md);
-    padding: 12px 14px;
+    padding: 10px 12px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
 }
 
@@ -134,7 +165,7 @@ h1 {
 }
 
 .score-label {
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.04em;
@@ -147,7 +178,7 @@ h1 {
 
 .score-value {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 1.45rem;
+    font-size: 1.4rem;
     font-weight: 700;
 }
 
@@ -179,10 +210,10 @@ h1 {
     background: rgba(255, 255, 255, 0.06);
     border: 1px solid rgba(255, 255, 255, 0.12);
     color: var(--text-primary);
-    padding: 5px 10px;
+    padding: 4px 8px;
     border-radius: 8px;
     font-family: inherit;
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     outline: none;
     cursor: pointer;
 }
@@ -196,13 +227,13 @@ h1 {
     background: rgba(255, 255, 255, 0.06);
     border: 1px solid rgba(255, 255, 255, 0.1);
     color: var(--text-primary);
-    width: 34px;
-    height: 34px;
+    width: 32px;
+    height: 32px;
     border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     cursor: pointer;
     transition: background 0.15s ease, transform 0.1s ease;
 }
@@ -212,44 +243,61 @@ h1 {
     transform: translateY(-1px);
 }
 
-/* 3x3 Game Board */
+/* Dynamic Game Board */
 .grid-container {
     width: 100%;
     display: flex;
     justify-content: center;
-    margin: 6px 0;
+    margin: 4px 0;
 }
 
 .game-board {
     display: grid;
+    width: 100%;
+    max-width: 390px;
+    aspect-ratio: 1 / 1;
+}
+
+.game-board.grid-4x4 {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+}
+
+.game-board.grid-3x3 {
     grid-template-columns: repeat(3, 1fr);
     gap: 12px;
-    width: 100%;
-    max-width: 380px;
-    aspect-ratio: 1 / 1;
 }
 
 .box {
     background: var(--tile-bg);
     border: 1px solid var(--card-border);
     border-radius: var(--radius-md);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
     font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 3.2rem;
     font-weight: 800;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     outline: none;
-    transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+    transition: transform 0.12s ease, background 0.12s ease, box-shadow 0.12s ease;
     user-select: none;
+}
+
+.grid-4x4 .box {
+    font-size: 2.2rem;
+    border-radius: 12px;
+}
+
+.grid-3x3 .box {
+    font-size: 3.2rem;
+    border-radius: 14px;
 }
 
 .box:hover:not(:disabled) {
     background: var(--tile-hover);
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
     border-color: rgba(255, 255, 255, 0.2);
 }
 
@@ -261,13 +309,13 @@ h1 {
 .box.box-o {
     color: var(--color-o);
     text-shadow: 0 0 16px var(--color-o-glow);
-    animation: popIn 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    animation: popIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .box.box-x {
     color: var(--color-x);
     text-shadow: 0 0 16px var(--color-x-glow);
-    animation: popIn 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    animation: popIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 @keyframes popIn {
@@ -276,31 +324,31 @@ h1 {
 }
 
 .box.winning-box {
-    background: rgba(52, 211, 153, 0.22) !important;
+    background: rgba(52, 211, 153, 0.25) !important;
     border-color: var(--color-win-tile) !important;
-    box-shadow: 0 0 24px var(--color-win-glow) !important;
+    box-shadow: 0 0 20px var(--color-win-glow) !important;
     color: #a7f3d0 !important;
-    animation: pulseWin 1.2s infinite alternate ease-in-out;
+    animation: pulseWin 1.1s infinite alternate ease-in-out;
 }
 
 @keyframes pulseWin {
     0% { transform: scale(1); }
-    100% { transform: scale(1.04); }
+    100% { transform: scale(1.03); }
 }
 
 /* Actions bar */
 .actions-bar {
     display: flex;
-    gap: 12px;
+    gap: 10px;
     width: 100%;
 }
 
 .btn {
     flex: 1;
-    padding: 12px 18px;
+    padding: 10px 16px;
     border-radius: var(--radius-sm);
     font-family: inherit;
-    font-size: 0.95rem;
+    font-size: 0.92rem;
     font-weight: 600;
     border: none;
     cursor: pointer;
@@ -368,24 +416,24 @@ h1 {
     background: #151d30;
     border: 1px solid var(--card-border);
     border-radius: var(--radius-lg);
-    padding: 28px 24px;
+    padding: 26px 22px;
     width: 100%;
     max-width: 380px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 14px;
     text-align: center;
 }
 
 .banner-icon, .trophy-glow {
-    font-size: 2.8rem;
-    margin-bottom: -6px;
+    font-size: 2.6rem;
+    margin-bottom: -4px;
 }
 
 .sub-msg, .match-score-text {
     color: var(--text-muted);
-    font-size: 0.95rem;
+    font-size: 0.92rem;
 }
 
 .input-group {
@@ -396,7 +444,7 @@ h1 {
 }
 
 .input-group label {
-    font-size: 0.82rem;
+    font-size: 0.8rem;
     font-weight: 600;
     color: var(--text-muted);
 }
@@ -406,9 +454,9 @@ h1 {
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 8px;
     color: var(--text-primary);
-    padding: 10px 14px;
+    padding: 9px 12px;
     font-family: inherit;
-    font-size: 0.95rem;
+    font-size: 0.92rem;
     outline: none;
 }
 
@@ -420,7 +468,7 @@ h1 {
 .modal-actions {
     display: flex;
     gap: 10px;
-    margin-top: 8px;
+    margin-top: 6px;
 }
 
 .hide {

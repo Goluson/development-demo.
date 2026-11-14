@@ -1,17 +1,21 @@
-# 🎮 Tic-Tac-Toe — Smart AI & 2-Player Game
+# 🎮 Tic-Tac-Toe — 4x4 Matrix & 3x3 Classic with Smart AI
 
 [![Deploy to GitHub Pages](https://github.com/Goluson/development-demo./actions/workflows/deploy.yml/badge.svg)](https://github.com/Goluson/development-demo./actions/workflows/deploy.yml)
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/Goluson/development-demo.)
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/Goluson/development-demo.)
 
-A modern, responsive, browser-based Tic-Tac-Toe game built with pure vanilla HTML5, CSS3, and JavaScript. Features an unbeatable Minimax AI, sound effects via Web Audio API, confetti celebrations, match series tracking, and keyboard accessibility.
+A modern, responsive, browser-based Tic-Tac-Toe game built with pure vanilla HTML5, CSS3, and JavaScript. Now supports both **4x4 Matrix (Connect 4 in a row)** and **3x3 Classic** modes, featuring tactical AI, sound synthesis via Web Audio API, confetti celebrations, match series tracking, and keyboard accessibility.
 
 ---
 
 ## 🌟 Features
 
-- **🤖 Unbeatable AI (Minimax Algorithm)**: Computes the mathematically optimal move every turn using recursive minimax evaluation with depth weighting.
-- **🙂 Casual AI Mode**: Allows a more relaxed difficulty where the AI occasionally plays random moves.
+- **🔥 4x4 Matrix Grid Mode**: Connect **4 in a row** across 16 cells (4 rows, 4 columns, 2 diagonals) with advanced strategic threat building.
+- **⚡ 3x3 Classic Mode**: The timeless 3-in-a-row game with quick toggling between grid sizes.
+- **🤖 Smart AI Engine**:
+  - **4x4 Mode:** Uses tactical threat evaluation, immediate blocking, and line-weighting heuristics for instant, competitive moves.
+  - **3x3 Mode:** Uses recursive Minimax search for optimal play.
+- **🙂 Casual AI Mode**: A more relaxed opponent that occasionally makes human-like mistakes.
 - **👥 2-Player Local PvP**: Pass-and-play on the same device.
 - **🎵 Built-in Web Audio Synthesizer**: Synthesizes tactile clicks, victory chimes, and draw tones directly through the browser's Web Audio API (zero external audio files). Includes a mute toggle.
 - **🎊 Confetti Particle Celebration**: Physics-based canvas confetti explosion on match victories.

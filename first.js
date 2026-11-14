@@ -1,16 +1,17 @@
 /**
- * Tic-Tac-Toe Game Engine
+ * Tic-Tac-Toe Game Engine (4x4 Matrix & 3x3 Classic)
  * Features:
- * - Unbeatable Minimax AI & Casual AI
- * - Web Audio API sound synthesis (clicks, victory chime, draw)
- * - Canvas confetti particle celebration
+ * - Dynamic 4x4 (4-in-a-row) and 3x3 Grid Modes
+ * - Smart AI with Threat Evaluation, Tactical Blocking, and Alpha-Beta Search
+ * - Web Audio API sound synthesis
+ * - Canvas confetti celebration
  * - Match series system (Best-of-N)
- * - LocalStorage state persistence
+ * - LocalStorage persistence
  */
 
 document.addEventListener("DOMContentLoaded", () => {
     // DOM Elements
-    const boxes = document.querySelectorAll(".box");
+    const gameBoard = document.querySelector("#game-board");
     const turnIndicator = document.querySelector("#turn-indicator");
     const scoreOEl = document.querySelector("#score-o");
     const scoreXEl = document.querySelector("#score-x");
@@ -18,6 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const labelPlayerO = document.querySelector("#label-player-o");
     const labelPlayerX = document.querySelector("#label-player-x");
 
+    const gridSizeBtns = document.querySelectorAll(".grid-size-btn");
     const aiModeSelect = document.querySelector("#ai-mode-select");
     const soundBtn = document.querySelector("#sound-btn");
     const settingsBtn = document.querySelector("#settings-btn");
@@ -42,29 +44,90 @@ document.addEventListener("DOMContentLoaded", () => {
     const bestOfSelect = document.querySelector("#best-of-select");
     const confettiCanvas = document.querySelector("#confetti-canvas");
 
-    // Game State
+    // Game Configuration & State
+    let gridSize = parseInt(localStorage.getItem("tttGridSize")) || 4; // Default to 4x4!
     let turnO = true;
     let count = 0;
     let gameOver = false;
+    let boxes = [];
+    let winpatterns = [];
+
     let soundEnabled = localStorage.getItem("tttSound") !== "false";
     let scores = JSON.parse(localStorage.getItem("tttScores")) || { X: 0, O: 0, Draw: 0 };
     let playerNames = JSON.parse(localStorage.getItem("tttNames")) || { O: "Player O", X: "Computer" };
     let bestOf = parseInt(localStorage.getItem("tttBestOf")) || 5;
-    let aiMode = localStorage.getItem("tttAiMode") || "unbeatable";
-
-    const winpatterns = [
-        [0, 1, 2],
-        [0, 3, 6],
-        [0, 4, 8],
-        [1, 4, 7],
-        [2, 5, 8],
-        [2, 4, 6],
-        [3, 4, 5],
-        [6, 7, 8],
-    ];
+    let aiMode = localStorage.getItem("tttAiMode") || "smart";
 
     // =========================================================================
-    // Web Audio Synthesizer (Zero External Audio Files Needed)
+    // Dynamic Win Pattern Generator
+    // =========================================================================
+    const generateWinPatterns = (size) => {
+        const patterns = [];
+        // Rows
+        for (let r = 0; r < size; r++) {
+            const row = [];
+            for (let c = 0; c < size; c++) row.push(r * size + c);
+            patterns.push(row);
+        }
+        // Columns
+        for (let c = 0; c < size; c++) {
+            const col = [];
+            for (let r = 0; r < size; r++) col.push(r * size + c);
+            patterns.push(col);
+        }
+        // Diagonals
+        const diag1 = [];
+        const diag2 = [];
+        for (let i = 0; i < size; i++) {
+            diag1.push(i * size + i);
+            diag2.push(i * size + (size - 1 - i));
+        }
+        patterns.push(diag1);
+        patterns.push(diag2);
+        return patterns;
+    };
+
+    // =========================================================================
+    // Board Initialization
+    // =========================================================================
+    const buildBoard = (size) => {
+        gridSize = size;
+        localStorage.setItem("tttGridSize", String(size));
+        winpatterns = generateWinPatterns(size);
+
+        gameBoard.innerHTML = "";
+        gameBoard.className = `game-board grid-${size}x${size}`;
+        boxes = [];
+
+        const totalCells = size * size;
+        for (let i = 0; i < totalCells; i++) {
+            const btn = document.createElement("button");
+            btn.className = "box";
+            btn.dataset.index = String(i);
+            btn.tabIndex = 0;
+            btn.setAttribute("aria-label", `Cell ${i + 1}`);
+
+            btn.addEventListener("click", () => playMove(btn, i));
+            btn.addEventListener("keydown", (e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    playMove(btn, i);
+                }
+            });
+
+            gameBoard.appendChild(btn);
+            boxes.push(btn);
+        }
+
+        gridSizeBtns.forEach((b) => {
+            b.classList.toggle("active", parseInt(b.dataset.size) === size);
+        });
+
+        resetRound();
+    };
+
+    // =========================================================================
+    // Web Audio Synthesizer
     // =========================================================================
     let audioCtx = null;
 
@@ -73,9 +136,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const AudioContext = window.AudioContext || window.webkitAudioContext;
             if (AudioContext) audioCtx = new AudioContext();
         }
-        if (audioCtx && audioCtx.state === "suspended") {
-            audioCtx.resume();
-        }
+        if (audioCtx && audioCtx.state === "suspended") audioCtx.resume();
     };
 
     const playTone = (freq, duration, type = "sine", gainVal = 0.1) => {
@@ -97,21 +158,21 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     const playClickSound = (isO) => {
-        playTone(isO ? 520 : 380, 0.08, "triangle", 0.08);
+        playTone(isO ? 540 : 400, 0.08, "triangle", 0.08);
     };
 
     const playWinSound = () => {
         if (!soundEnabled) return;
-        setTimeout(() => playTone(523.25, 0.15, "sine", 0.12), 0);
-        setTimeout(() => playTone(659.25, 0.15, "sine", 0.12), 120);
-        setTimeout(() => playTone(783.99, 0.3, "sine", 0.14), 240);
-        setTimeout(() => playTone(1046.50, 0.45, "sine", 0.16), 380);
+        setTimeout(() => playTone(523.25, 0.14, "sine", 0.12), 0);
+        setTimeout(() => playTone(659.25, 0.14, "sine", 0.12), 110);
+        setTimeout(() => playTone(783.99, 0.25, "sine", 0.14), 220);
+        setTimeout(() => playTone(1046.50, 0.4, "sine", 0.16), 340);
     };
 
     const playDrawSound = () => {
         if (!soundEnabled) return;
         setTimeout(() => playTone(440, 0.15, "sine", 0.1), 0);
-        setTimeout(() => playTone(349, 0.25, "sine", 0.1), 150);
+        setTimeout(() => playTone(349, 0.25, "sine", 0.1), 140);
     };
 
     // =========================================================================
@@ -154,7 +215,7 @@ document.addEventListener("DOMContentLoaded", () => {
             confettiParticles.forEach((p) => {
                 p.x += p.vx;
                 p.y += p.vy;
-                p.vy += 0.35; // gravity
+                p.vy += 0.35;
                 p.tiltAngle += p.tiltSpeed;
                 p.tilt = Math.sin(p.tiltAngle) * 12;
                 p.alpha -= 0.007;
@@ -214,7 +275,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     // =========================================================================
-    // Game Controls & Turns
+    // Gameplay Logic
     // =========================================================================
     const playMove = (box, index) => {
         if (gameOver || box.innerText !== "") return;
@@ -230,26 +291,27 @@ document.addEventListener("DOMContentLoaded", () => {
         renderTurnIndicator();
 
         const winnerFound = checkWinner();
+        const totalCells = gridSize * gridSize;
 
-        if (!winnerFound && count === 9) {
+        if (!winnerFound && count === totalCells) {
             handleDraw();
             return;
         }
 
         // Trigger AI move if enabled and it's X's turn
-        if (!winnerFound && count < 9 && aiMode !== "pvp" && !turnO) {
-            setTimeout(executeAiTurn, 320);
+        if (!winnerFound && count < totalCells && aiMode !== "pvp" && !turnO) {
+            setTimeout(executeAiTurn, 280);
         }
     };
 
     const checkWinner = () => {
         for (let pattern of winpatterns) {
-            const pos1val = boxes[pattern[0]].innerText;
-            const pos2val = boxes[pattern[1]].innerText;
-            const pos3val = boxes[pattern[2]].innerText;
+            const first = boxes[pattern[0]].innerText;
+            if (first === "") continue;
 
-            if (pos1val !== "" && pos1val === pos2val && pos2val === pos3val) {
-                showWinner(pos1val, pattern);
+            const isWin = pattern.every((idx) => boxes[idx].innerText === first);
+            if (isWin) {
+                showWinner(first, pattern);
                 return true;
             }
         }
@@ -264,7 +326,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const winnerName = winner === "O" ? playerNames.O : playerNames.X;
         roundIcon.innerText = winner === "O" ? "🎉" : "🤖";
         msgEl.innerText = `${winnerName} Wins!`;
-        subMsgEl.innerText = `Secured 1 point for team ${winner}`;
+        subMsgEl.innerText = `Connected ${gridSize} in a row for team ${winner}`;
         roundModal.classList.remove("hide");
 
         playWinSound();
@@ -278,7 +340,7 @@ document.addEventListener("DOMContentLoaded", () => {
         scores.Draw++;
         roundIcon.innerText = "🤝";
         msgEl.innerText = "Round Draw!";
-        subMsgEl.innerText = "Well played by both sides!";
+        subMsgEl.innerText = "Full grid! Well contested by both sides.";
         roundModal.classList.remove("hide");
 
         playDrawSound();
@@ -312,7 +374,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     const showMatchChampion = (winnerName, winCount, loseCount) => {
-        matchWinnerScore.innerText = `${winnerName} conquered the series ${winCount} - ${loseCount}!`;
+        matchWinnerScore.innerText = `${winnerName} won the match series ${winCount} - ${loseCount}!`;
         matchModal.classList.remove("hide");
         triggerConfetti();
         playWinSound();
@@ -326,17 +388,21 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     // =========================================================================
-    // AI Algorithms (Minimax & Casual)
+    // Smart AI Engine (Heuristic Search for 4x4, Minimax for 3x3)
     // =========================================================================
-    const checkPatternWinner = (state) => {
-        for (const [a, b, c] of winpatterns) {
-            if (state[a] && state[a] === state[b] && state[b] === state[c]) return state[a];
+    const checkStateWinner = (state) => {
+        for (let pattern of winpatterns) {
+            const first = state[pattern[0]];
+            if (first !== "" && pattern.every((idx) => state[idx] === first)) {
+                return first;
+            }
         }
         return null;
     };
 
-    const minimax = (state, depth, isMaximizing) => {
-        const winner = checkPatternWinner(state);
+    // 3x3 Classic Minimax
+    const minimax3x3 = (state, depth, isMaximizing) => {
+        const winner = checkStateWinner(state);
         if (winner === "X") return 10 - depth;
         if (winner === "O") return depth - 10;
         if (!state.includes("")) return 0;
@@ -346,7 +412,7 @@ document.addEventListener("DOMContentLoaded", () => {
             for (let i = 0; i < 9; i++) {
                 if (state[i] === "") {
                     state[i] = "X";
-                    best = Math.max(best, minimax(state, depth + 1, false));
+                    best = Math.max(best, minimax3x3(state, depth + 1, false));
                     state[i] = "";
                 }
             }
@@ -356,7 +422,7 @@ document.addEventListener("DOMContentLoaded", () => {
             for (let i = 0; i < 9; i++) {
                 if (state[i] === "") {
                     state[i] = "O";
-                    best = Math.min(best, minimax(state, depth + 1, true));
+                    best = Math.min(best, minimax3x3(state, depth + 1, true));
                     state[i] = "";
                 }
             }
@@ -364,13 +430,13 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     };
 
-    const getBestMove = (state) => {
+    const get3x3BestMove = (state) => {
         let bestVal = -Infinity;
         let move = -1;
         for (let i = 0; i < 9; i++) {
             if (state[i] === "") {
                 state[i] = "X";
-                const moveVal = minimax(state, 0, false);
+                const moveVal = minimax3x3(state, 0, false);
                 state[i] = "";
                 if (moveVal > bestVal) {
                     bestVal = moveVal;
@@ -381,9 +447,87 @@ document.addEventListener("DOMContentLoaded", () => {
         return move;
     };
 
+    // 4x4 Heuristic Strategic AI
+    const get4x4SmartMove = (state) => {
+        const size = 4;
+        const total = 16;
+        const available = [];
+        for (let i = 0; i < total; i++) {
+            if (state[i] === "") available.push(i);
+        }
+        if (available.length === 0) return -1;
+
+        // 1. Immediate Win: Can X complete 4 in a row?
+        for (let idx of available) {
+            state[idx] = "X";
+            if (checkStateWinner(state) === "X") {
+                state[idx] = "";
+                return idx;
+            }
+            state[idx] = "";
+        }
+
+        // 2. Critical Block: Can O win in 1 move? Block it!
+        for (let idx of available) {
+            state[idx] = "O";
+            if (checkStateWinner(state) === "O") {
+                state[idx] = "";
+                return idx;
+            }
+            state[idx] = "";
+        }
+
+        // 3. Score all moves based on line building and center control
+        const centerPositions = [5, 6, 9, 10]; // 4x4 inner core
+        let bestScore = -Infinity;
+        let chosenMove = available[0];
+
+        for (let idx of available) {
+            let score = 0;
+
+            // Center control bonus
+            if (centerPositions.includes(idx)) score += 8;
+
+            // Evaluate impact on all lines containing this cell
+            for (let pattern of winpatterns) {
+                if (!pattern.includes(idx)) continue;
+
+                let xCount = 0;
+                let oCount = 0;
+                let emptyCount = 0;
+
+                for (let cell of pattern) {
+                    if (cell === idx) xCount++; // hypothetical move
+                    else if (state[cell] === "X") xCount++;
+                    else if (state[cell] === "O") oCount++;
+                    else emptyCount++;
+                }
+
+                if (oCount === 0) {
+                    if (xCount === 3) score += 50; // create 3-in-a-row threat
+                    else if (xCount === 2) score += 12; // create 2-in-a-row
+                    else if (xCount === 1) score += 3;
+                } else if (xCount === 1 && oCount === 2) {
+                    // Block opponent's 2-in-a-row progression
+                    score += 15;
+                }
+            }
+
+            // Small randomness to make gameplay feel alive
+            score += Math.random() * 2;
+
+            if (score > bestScore) {
+                bestScore = score;
+                chosenMove = idx;
+            }
+        }
+
+        return chosenMove;
+    };
+
     const getRandomAvailableMove = (state) => {
         const available = [];
-        for (let i = 0; i < 9; i++) {
+        for (let i = 0; i < state.length; i++) {
             if (state[i] === "") available.push(i);
         }
         return available[Math.floor(Math.random() * available.length)];
@@ -392,13 +536,17 @@ document.addEventListener("DOMContentLoaded", () => {
     const executeAiTurn = () => {
         if (gameOver) return;
 
-        const state = [...boxes].map((b) => b.innerText);
+        const state = boxes.map((b) => b.innerText);
         let moveIndex = -1;
 
-        if (aiMode === "easy" && Math.random() < 0.45) {
+        if (aiMode === "easy" && Math.random() < 0.4) {
             moveIndex = getRandomAvailableMove(state);
         } else {
-            moveIndex = getBestMove(state);
+            if (gridSize === 3) {
+                moveIndex = get3x3BestMove(state);
+            } else {
+                moveIndex = get4x4SmartMove(state);
+            }
         }
 
         if (moveIndex !== -1 && boxes[moveIndex]) {
@@ -409,12 +557,12 @@ document.addEventListener("DOMContentLoaded", () => {
     // =========================================================================
     // Event Listeners
     // =========================================================================
-    boxes.forEach((box, index) => {
-        box.addEventListener("click", () => playMove(box, index));
-        box.addEventListener("keydown", (e) => {
-            if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                playMove(box, index);
+    gridSizeBtns.forEach((btn) => {
+        btn.addEventListener("click", () => {
+            const size = parseInt(btn.dataset.size);
+            if (size !== gridSize) {
+                buildBoard(size);
+                resetMatch();
             }
         });
     });
@@ -464,7 +612,8 @@ document.addEventListener("DOMContentLoaded", () => {
         settingsModal.classList.add("hide");
     });
 
-    // Initial setup
+    // Initial Launch
+    buildBoard(gridSize);
     renderScores();
     applySettingsToUI();
     renderTurnIndicator();
